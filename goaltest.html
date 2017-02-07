@@ -1,0 +1,223 @@
+<!DOCTYPE html> 
+<html>
+	<head>
+		<title>Set Goals</title>
+
+
+		<link rel="stylesheet" href="Kendostyles/kendo.common.min.css" />
+    
+    <link rel="stylesheet" href="Kendostyles/kendo.flat.min.css" />
+    <link rel="stylesheet" href="Kendostyles/kendo.flat.mobile.min.css" />
+    
+
+
+    <script src="Kendojs/jquery.min.js"></script>
+    <script src="Kendojs/kendo.all.min.js"></script>
+
+		 <script>
+
+
+                $(document).ready(function () {
+
+
+
+                    var crudServiceBaseUrl = "http://localhost/AWRS/AWRS_Actual_Website/Goals_data.php",
+
+                    dataSource = new kendo.data.DataSource({
+                            transport: {
+                                read:  {
+                                    url: crudServiceBaseUrl,
+
+                                    dataType: "json"
+                                },
+                                update: {
+                                    url: crudServiceBaseUrl,
+                                    type: "POST",
+                                    dataType: "json"
+                                },
+                                destroy: {
+                                    url: crudServiceBaseUrl ,
+                                    dataType: "json"
+                                },
+                                create: {
+                                    url: crudServiceBaseUrl,
+                                    dataType: "json",
+                                    type: "POST",
+                                },
+                               
+                            },
+                            
+                            pageSize: 20,
+                            schema: {
+                                model: {
+                                    id: "month_id",
+                                    fields: {
+                                        month_id: { editable: false, nullable: true },
+                                        month_desc: { validation: { required: true },editable: false },
+                                        revenue: { type: "number", validation: { required: true, min: 1} },
+                                        
+                                        wheels_count: { type: "number", validation: { min: 1, required: true } },
+                                        hours: { type: "number", validation: { min: 1, required: true } },
+                                        invoice_count: { type: "number", validation: { min: 1, required: true } },
+                                        
+                                        
+                                    }
+                                    /*Revtotal: function() {
+                                  return this.get("UnitPrice") *  this.get("UnitsInStock");
+                                }*/
+                                }
+                            },
+
+                             aggregate: [ { field: "month_desc", aggregate: "count" },
+                                          { field: "revenue", aggregate: "sum" },
+                                          { field: "wheels_count", aggregate: "sum" },
+                                          { field: "hours", aggregate: "sum" },
+                                          { field: "invoice_count", aggregate: "sum" },
+                                          //{field: "Revtotal", aggregate: "sum"}
+                                          ]
+                        });
+
+                    $("#grid").kendoGrid({
+                        dataSource: dataSource,
+                        pageable: true,
+                        
+                        
+                        columns: [
+                            { field:"month_desc", title: "Month" ,editable: false,aggregates: ["count"], footerTemplate: "Total ", width: "100px"},
+                            { field: "revenue", title:"Revenue", format: "{0:c}", width: "120px" ,aggregates: ["sum"],footerTemplate: "#=sum#"},
+                            { field: "wheels_count", title:"Wheels", width: "120px",aggregates: ["sum"],footerTemplate: "#=sum#"},
+                            { field: "hours", title:"Hours", width: "120px",aggregates: ["sum"],footerTemplate: "#=sum#"},
+                            { field: "invoice_count", title:"Invoice", width: "120px",aggregates: ["sum"],footerTemplate: "#=sum#"},
+                            
+                           /* {
+                        field: "Revtotal",
+                        title: "Total",
+                        width: "120px",
+                        editable: false,
+                        template: "#= Revtotal() #",
+                        aggregates: ["sum"],footerTemplate: "#= sum #"
+                    },*/
+                            { command: ["edit"], title: "&nbsp;", width: "150px" }],
+                        editable: "popup"
+                    });
+
+                   /* var item = {
+revenue: $("#txtrevenue").val(),
+wheels_count: $("#txtwheels_count").val(),
+hours: $("#txthours").val(),
+invoice_count: $("#txtinvoice_count").val(),
+}
+ 
+dataSource.add(item);
+dataSource.sync();
+if(dataSource.sync())
+{
+console.log("done");
+
+
+}*/
+
+$("#create_data").click(function(){
+
+dataSource.add({month_desc: $("#month_txt").val(),revenue: $("#rev_txt").val(),wheels_count: $("#wheel_txt").val(),
+hours: $("#hr_txt").val(),invoice_count: $("#invoice_txt").val()});
+
+});
+
+dataSource.sync();
+$("#month_txt").val('');
+$("#rev_txt").val('');
+$("#wheel_txt").val('');
+$("#hr_txt").val('');
+$("#invoice_txt").val('');
+
+                });
+            </script>
+
+
+	</head>
+
+	<body>
+
+          <div id="vertical">
+                <div id="top-pane">
+                    <div id="horizontal" style="height: 100%; width: 100%;">
+                        <div id="left-pane">
+                            <div class="pane-content" >
+                               <dl> 
+                                    <dt>Month :</dt>
+                                    <dd><input type="text" id="month_txt"> </dd>
+                                    <dt>Revenue: </dt>
+                                    <dd><input type="text" id="rev_txt"> </dd>
+                                    <dt>Wheels: </dt>
+                                    <dd> <input type="text" id="wheel_txt"></dd>
+                                    <dt> Hours: </dt>
+                                    <dd> <input type="text" id="hr_txt"></dd>
+                                    <dt> Invoice:</dt>
+                                    <dd> <input type="text" id="invoice_txt"></dd>
+
+                                    <dd><button id="create_data">Create</button></dd>
+                               </dl>
+                            </div>
+                        </div>
+                        <div id="center-pane">
+                            <div class="pane-content">
+                                <div id="grid" width=100% height=90%></div>
+                            </div>
+                        </div>
+                        <div id="right-pane">
+                            <div class="pane-content">
+                                <h3>Inner splitter / right pane</h3>
+                                <p>Resizable and collapsible.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               
+            </div>
+
+            <script>
+                $(document).ready(function() {
+                    $("#vertical").kendoSplitter({
+                        orientation: "vertical",
+                        panes: [
+                            { collapsible: false },
+                            { collapsible: false, size: "100px" },
+                            { collapsible: false, resizable: false, size: "100px" }
+                        ]
+                    });
+
+                    $("#horizontal").kendoSplitter({
+                        panes: [
+                            { collapsible: true , size: "250px" },
+                            { collapsible: false },
+                            { collapsible: true, size: "250px" }
+                        ]
+                    });
+                });
+            </script>
+
+            <style>
+                #vertical {
+                    height: 580px;
+                    margin: 0 auto;
+                }
+
+                #middle-pane { background-color: rgba(60, 70, 80, 0.10); }
+                #bottom-pane { background-color: rgba(60, 70, 80, 0.15); }
+                #left-pane, #center-pane, #right-pane  { background-color: rgba(60, 70, 80, 0.05); }
+
+                .pane-content {
+                    padding: 0 10px;
+                }
+            </style>
+		
+		
+
+           
+
+	</body>
+
+
+
+</html>
