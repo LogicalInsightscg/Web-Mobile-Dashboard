@@ -27,9 +27,10 @@
                                     dataType: "json"
                                 },
                                 update: {
-                                    url: crudServiceBaseUrl,
-                                    type: "POST",
+                                    url: "http://localhost/AWRS/AWRS_Actual_Website/updategoal.php",
+                                    
                                     dataType: "json",
+                                   
                                     complete: function (e) {
 
                                                         if (e.status == 500) {
@@ -52,18 +53,16 @@
                                     url: crudServiceBaseUrl ,
                                     dataType: "json"
                                 },
-                                 parameterMap: function (options, operation) {
-
-                if (operation == "update") {
-
-                    return { models: kendo.stringify(options) };
-                }
-
-            }
+                                 parameterMap: function(options, operation) {
+                                    if (operation !== "read" && options.models) {
+                                        return {models: kendo.stringify(options.models)};
+                                    }
+                                }
                               
                             },
                             
                             pageSize: 20,
+                            batch: true,
                             schema: {
                                 model: {
                                     id: "month_id",
@@ -102,7 +101,7 @@
                         dataSource: dataSource,
 
                         pageable: true,
-                        batch: false,
+                        
                         
                         columns: [
                             { field:"month_desc", title: "Month" ,editable: false,aggregates: ["count"], footerTemplate: "Total ", width: "100px"},
@@ -120,8 +119,32 @@
                         aggregates: ["sum"],footerTemplate: "#= sum #"
                     },*/
                             ],
+                            columnMenu:{
+    messages:{
+      columns:"Choose columns",
+      filter:"Apply filter",
+      sortAscending:"Sort (asc)",
+      sortDescending:"Sort (desc)"
+    }
+  },
+  change: function() {
+                            console.log("change event");
+                        },
+                        edit: function() {
+                            console.log("edit event");
+                        },
+                        save: function() {
+                            console.log("save event");
+                        },
+                        saveChanges: function() {
+                            console.log("saveChanges event");
+                              $('#grid').data().kendoGrid.refresh();
+                        },
+                        remove: function() {
+                            console.log("remove event");
+                        },
                            
- 
+
   editable: true,
   navigable: true,  // enables keyboard navigation in the grid
   toolbar: [ "save", "cancel" ]  // adds save and cancel buttons
