@@ -23,17 +23,24 @@
                             transport: {
                                 read:  {
                                     url: crudServiceBaseUrl,
-                                    
+                                    cache: false,
                                     dataType: "json"
                                 },
                                 update: {
                                     url: crudServiceBaseUrl,
                                     type: "POST",
                                     dataType: "json",
+                                    complete: function (e) {
 
-                                    error: function(e) {
-      alert(e.responseText);
-    }
+                                                        if (e.status == 500) {
+                                                            alert('Error Occure');
+                                                        }
+                                                        else {
+                                                            $("#grid").data("kendoGrid").dataSource.read();
+                                                            alert(e.responseText);
+                                                        }
+                                                    }
+                                        
 
                                 },
 
@@ -45,11 +52,14 @@
                                     url: crudServiceBaseUrl ,
                                     dataType: "json"
                                 },
-                                 parameterMap: function(options, operation) {
-                                    if (operation !== "read" && options.models) {
-                                        return {models: kendo.stringify(options.models)};
-                                    }
-                                }
+                                 parameterMap: function (options, operation) {
+
+                if (operation == "update") {
+
+                    return { models: kendo.stringify(options) };
+                }
+
+            }
                               
                             },
                             
@@ -92,7 +102,7 @@
                         dataSource: dataSource,
 
                         pageable: true,
-                        
+                        batch: false,
                         
                         columns: [
                             { field:"month_desc", title: "Month" ,editable: false,aggregates: ["count"], footerTemplate: "Total ", width: "100px"},
@@ -117,6 +127,8 @@
   toolbar: [ "save", "cancel" ]  // adds save and cancel buttons
                         
                     });
+
+
 
                    /* var item = {
 revenue: $("#txtrevenue").val(),
