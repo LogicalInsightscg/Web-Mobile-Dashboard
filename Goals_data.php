@@ -4,10 +4,6 @@ require 'connection.php';
 
 
 
-include 'ChromePhp.php';
-ChromePhp::log('Hello console!');
-ChromePhp::log($_SERVER);
-ChromePhp::warn('something went wrong!'); 
 
  	
  // add the header line to specify that the content type is JSON
@@ -46,14 +42,12 @@ $hr = mysql_real_escape_string($_POST["hours"]);
  $ic = mysql_real_escape_string($_POST["invoice_count"]);
  $mon = mysql_real_escape_string($_POST["month_id"]);
 
- $query = sprintf("UPDATE fct_awrs_order_month SET revenue = '" . $rev ."',wheels_count = '" . $whl ."',hours = '" . $hr ."',invoice_count = '" . $ic ."' WHERE month_id = '" .$mon. "' and franchise_id='1' ");
-
- console.log($query);
+ 
 
         $rs = mysql_query("UPDATE fct_awrs_order_month SET revenue = '" . $rev ."',wheels_count = '" . $whl ."',hours = '" . $hr ."',invoice_count = '" . $ic ."' WHERE month_id = '" .$mon. "' and franchise_id='1' ");
 if ($rs) {
         
-        return $rs;
+        echo json_encode($rs);
     }
     else {
         header("HTTP/1.1 500 Internal Server Error");
